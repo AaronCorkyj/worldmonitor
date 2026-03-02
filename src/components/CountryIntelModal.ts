@@ -9,6 +9,7 @@ import type { CountryScore } from '@/services/country-instability';
 import type { PredictionMarket } from '@/services/prediction';
 import { getRegionByCountryCode } from '@/services/signal-aggregator';
 import type { DeckMapView } from '@/components/DeckGLMap';
+import { getFlagHtml } from '@/services/flags';
 
 interface CountryIntelData {
   brief: string;
@@ -76,18 +77,6 @@ export class CountryIntelModal {
     });
   }
 
-  private countryFlag(code: string): string {
-    try {
-      return code
-        .toUpperCase()
-        .split('')
-        .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
-        .join('');
-    } catch {
-      return '🌍';
-    }
-  }
-
   private levelBadge(level: string): string {
     const varMap: Record<string, string> = {
       critical: '--semantic-critical',
@@ -137,7 +126,7 @@ export class CountryIntelModal {
   public show(country: string, code: string, score: CountryScore | null, signals?: ActiveSignals): void {
     this.currentCode = code;
     this.currentName = country;
-    const flag = this.countryFlag(code);
+    const flag = getFlagHtml(code, 32);
     let html = '';
     this.overlay.classList.add('active');
 
@@ -327,7 +316,7 @@ export class CountryIntelModal {
     
     // Current country (not clickable)
     breadcrumbHtml += `<li class="cii-breadcrumb-separator" aria-hidden="true">&gt;</li>`;
-    breadcrumbHtml += `<li class="cii-breadcrumb-item cii-breadcrumb-current" aria-current="page"><span class="cii-flag-small">${this.countryFlag(code)}</span>${escapeHtml(country)}</li>`;
+    breadcrumbHtml += `<li class="cii-breadcrumb-item cii-breadcrumb-current" aria-current="page"><span class="cii-flag-small">${getFlagHtml(code, 16)}</span>${escapeHtml(country)}</li>`;
     
     breadcrumbHtml += '</ol></nav>';
     return breadcrumbHtml;

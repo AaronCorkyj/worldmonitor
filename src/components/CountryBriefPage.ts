@@ -15,6 +15,7 @@ import type { CountryBriefExport } from '@/utils/export';
 import { ME_STRIKE_BOUNDS } from '@/services/country-geometry';
 import { getRegionByCountryCode } from '@/services/signal-aggregator';
 import type { DeckMapView } from '@/components/DeckGLMap';
+import { getFlagHtml } from '@/services/flags';
 
 type BriefAssetType = AssetType | 'port';
 
@@ -93,18 +94,6 @@ export class CountryBriefPage {
     });
   }
 
-  private countryFlag(code: string): string {
-    try {
-      return code
-        .toUpperCase()
-        .split('')
-        .map((c) => String.fromCodePoint(0x1f1e6 + c.charCodeAt(0) - 65))
-        .join('');
-    } catch {
-      return '🌍';
-    }
-  }
-
   private levelColor(level: string): string {
     const varMap: Record<string, string> = {
       critical: '--semantic-critical',
@@ -141,7 +130,7 @@ export class CountryBriefPage {
     
     // Current country (not clickable)
     breadcrumbHtml += `<li class="cb-breadcrumb-separator" aria-hidden="true">&gt;</li>`;
-    breadcrumbHtml += `<li class="cb-breadcrumb-item cb-breadcrumb-current" aria-current="page"><span class="cb-flag-small">${this.countryFlag(code)}</span>${escapeHtml(country)}</li>`;
+    breadcrumbHtml += `<li class="cb-breadcrumb-item cb-breadcrumb-current" aria-current="page"><span class="cb-flag-small">${getFlagHtml(code, 16)}</span>${escapeHtml(country)}</li>`;
     
     breadcrumbHtml += '</ol></nav>';
     return breadcrumbHtml;
@@ -307,7 +296,6 @@ export class CountryBriefPage {
     this.currentBrief = null;
     this.currentHeadlines = [];
     this.currentHeadlineCount = 0;
-    const flag = this.countryFlag(code);
 
     const tierBadge = !signals.isTier1
       ? `<span class="cb-tier-badge">${t('modals.countryBrief.limitedCoverage')}</span>`
@@ -318,7 +306,7 @@ export class CountryBriefPage {
         ${this.generateBreadcrumb(country, code)}
         <div class="cb-header">
           <div class="cb-header-left">
-            <span class="cb-flag">${flag}</span>
+            <span class="cb-flag">${getFlagHtml(code, 32)}</span>
             <span class="cb-country-name">${escapeHtml(country)}</span>
             ${score ? this.levelBadge(score.level) : ''}
             ${score ? this.trendIndicator(score.trend) : ''}

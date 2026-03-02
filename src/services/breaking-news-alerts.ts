@@ -195,6 +195,8 @@ export function checkBatchForBreakingAlerts(items: NewsItem[]): void {
 
   // Build the main alert from the newest item
   const mainItem = bestGroup.items.sort((a, b) => b.pubDate.getTime() - a.pubDate.getTime())[0];
+  if (!mainItem) return;
+  
   const relatedItems = bestGroup.items.filter(i => i.link !== mainItem.link).slice(0, 3);
   
   const alert: BreakingAlert = {
